@@ -132,11 +132,11 @@ module.exports.promise = (action, options) => {
 	spinner.start();
 
 	action.then(
-		() => {
-			spinner.succeed();
+		options => {
+			spinner.succeed(options);
 		},
-		() => {
-			spinner.fail();
+		options => {
+			spinner.fail(options);
 		}
 	);
 

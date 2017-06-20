@@ -129,7 +129,7 @@ test('.start(text)', macro, spinner => {
 test('.promise() - resolves', async t => {
 	const stream = getPassThroughStream();
 	const output = getStream(stream);
-	const resolves = Promise.resolve(1);
+	const resolves = Promise.resolve();
 
 	Ora.promise(resolves, {
 		stream,
@@ -144,10 +144,28 @@ test('.promise() - resolves', async t => {
 	t.regex(stripAnsi(await output), /(✔|√) foo/);
 });
 
+test('.promise() - resolves with text', async t => {
+	const stream = getPassThroughStream();
+	const output = getStream(stream);
+	const resolves = Promise.resolve('done');
+
+	Ora.promise(resolves, {
+		stream,
+		text: 'foo',
+		color: false,
+		enabled: true
+	});
+
+	await resolves;
+	stream.end();
+
+	t.regex(stripAnsi(await output), /(✔|√) done/);
+});
+
 test('.promise() - rejects', async t => {
 	const stream = getPassThroughStream();
 	const output = getStream(stream);
-	const rejects = Promise.reject(new Error());
+	const rejects = Promise.reject();
 
 	Ora.promise(rejects, {
 		stream,
@@ -163,4 +181,25 @@ test('.promise() - rejects', async t => {
 	stream.end();
 
 	t.regex(stripAnsi(await output), /(✖|×) foo/);
+});
+
+test('.promise() - rejects with text', async t => {
+	const stream = getPassThroughStream();
+	const output = getStream(stream);
+	const rejects = Promise.reject('failed');
+
+	Ora.promise(rejects, {
+		stream,
+		text: 'foo',
+		color: false,
+		enabled: true
+	});
+
+	try {
+		await rejects;
+	} catch (err) {}
+
+	stream.end();
+
+	t.regex(stripAnsi(await output), /(✖|×) failed/);
 });
